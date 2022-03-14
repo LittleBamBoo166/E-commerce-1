@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E - Commerce 1</title>
+
+    <link rel="stylesheet" href="css/signup.css">
+    <link rel="stylesheet" href="css/seller.css">
+
+</head>
+
+<body>
+    <img src="img/loader.gif" class="loader" alt="">
+    <div class="alert-box">
+        <img src="img/error.png" class="alert-img" alt="">
+        <p class="alert-msg">Error message</p>
+    </div>
+
+    <img src="img/dark-logo.png" class="logo" alt="">
+
+    <!-- become seller element -->
+    <div class="become-seller hide">
+        <p class="heading">become a seller</p>
+        <p class="des">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt tempora autem cumque iure, aut
+            impedit? Harum veniam voluptatem dolor voluptatum debitis velit nisi, aperiam unde et esse! Vel itaque aut
+            molestias incidunt deserunt maiores accusamus alias distinctio nobis! Enim quia sint nostrum voluptates cum.
+            Quod, eaque. Aspernatur praesentium placeat corporis facilis excepturi minus! Commodi vero doloremque
+            quibusdam rem laudantium cupiditate delectus numquam facere impedit, similique optio, asperiores culpa.
+            Excepturi, minima nam qui debitis nulla voluptatum aliquam sunt, rerum in officiis quae perspiciatis
+            dolores. Nihil aut eos optio, placeat necessitatibus unde fugit tenetur libero! Repellendus voluptas illo
+            corporis veniam sunt libero?</p>
+        <button class="btn" id="apply-btn">apply for seller account</button>
+    </div>
+
+    <!-- apply form -->
+    <div class="apply-form hide">
+        <input type="text" id="business-name" placeholder="businness name / company / shop name">
+        <textarea id="business-add" placeholder="address"></textarea>
+        <textarea id="about" placeholder="about"></textarea>
+        <input type="text" id="number" placeholder="number">
+        <input type="checkbox" class="checkbox" checked id="terms-and-cond">
+        <label for="terms-and-cond">agree to our <a href="">terms and conditions</a></label>
+        <br>
+        <input type="checkbox" checked class="checkbox" id="legit-info">
+        <label for="legitInfo">all information is legit</label>
+        <button class="submit-btn" id="apply-form-btn">apply</button>
+    </div>
+
+    <!-- product list -->
+    <div class="product-listing hide">
+        <div class="add-product">
+            <p class="add-product-title">add product</p>
+            <button class="btn">add product</button>
+        </div>
+        <img src="img/no-products.png" class="no-product-image" alt="">
+    </div>
+
+    <script src="js/token.js"></script>
+    <script src="js/seller.js"></script>
+</body>
+
+</html>

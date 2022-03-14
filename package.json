@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@google-cloud/firestore": "^5.0.2",
+    "@google-cloud/storage": "^5.18.2",
+    "bcrypt": "^5.0.1",
+    "express.js": "^1.0.0",
+    "firebase-admin": "^10.0.2",
+    "nodemon": "^2.0.15"
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  }
+}
