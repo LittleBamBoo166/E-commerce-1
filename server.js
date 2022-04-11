@@ -14,6 +14,44 @@ admin.initializeApp({
 
 let db = admin.firestore();
 
+// aws config
+const aws = require('aws-sdk');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+// aws parameters
+const region = "us-west-2";
+const bucketName = "my-first-ecom-website-123321";
+const accessKeyId = process.env.AWS_ACCESS_KEY;
+const secretAccessKey = process.env.AWS_SECRET_KEY;
+
+aws.config.update({
+    region: region, 
+    accessKeyId: accessKeyId, 
+    accessSecretKey: secretAccessKey,
+})
+
+// init s3
+const s3 = new aws.S3();
+
+// generate image upload link
+async function generateUrl() {
+    let date = new Date();
+    let id = parseInt(Math.random() * 10000000000);
+
+    const imageName = `${id}${date.getTime()}.jpg`;
+
+    const params = ({
+        Bucket: bucketName,
+        Key: imageName,
+        Expires: 300, // 300 ms
+        ContentType: 'image/jpeg'
+    })
+    const uploadUrl = await s3.getSignedUrlPromise('putObject', params);
+    return uploadUrl;
+}
+
 // declare static path
 let staticPath = path.join(__dirname, "public");
 
@@ -125,6 +163,20 @@ app.post('/seller', (req, res) => {
             })
         })
     }
+})
+
+// add product
+app.get('/add-product', (req, res) => {
+    res.sendFile(path.join(staticPath, "addProduct.html"));
+})
+
+app.get('/product', (req, res) => {
+    res.sendFile(path.join(staticPath, "product.html"));
+})
+
+// get the upload link
+app.get('/s3url', (req, res) => {
+    generateUrl().then(url => res.json(url));
 })
 
 // 404 route
