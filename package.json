@@ -2,7 +2,7 @@
   "dependencies": {
     "@google-cloud/firestore": "^5.0.2",
     "@google-cloud/storage": "^5.18.2",
-    "aws-sdk": "^2.1094.0",
+    "aws-sdk": "^2.1111.0",
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.0",
     "express.js": "^1.0.0",

@@ -36,7 +36,8 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #fff;
+    /* background: #fff; */
+    background: url(../img/img-preview.jpg);
     background-size: cover;
     border-radius: 10px;
     grid-row: span 2;

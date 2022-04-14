@@ -27,13 +27,15 @@ const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
 
 aws.config.update({
-    region: region, 
-    accessKeyId: accessKeyId, 
+    region: region,
+    accessKeyId: accessKeyId,
     accessSecretKey: secretAccessKey,
 })
 
 // init s3
-const s3 = new aws.S3();
+const s3 = new aws.S3({
+    signatureVersion: 'v4'
+});
 
 // generate image upload link
 async function generateUrl() {
@@ -120,15 +122,15 @@ app.post('/login', (req, res) => {
     let { email, password } = req.body;
 
     if (!email.length || !password.length) {
-        return res.json({'alert': 'fill all the inputs'});
+        return res.json({ 'alert': 'fill all the inputs' });
     }
 
     db.collection('users').doc(email).get().then(user => {
         if (!user.exists) { // if email does not exist
-            return res.json({'alert': 'log in email does not exist'});
+            return res.json({ 'alert': 'log in email does not exist' });
         } else {
             bcrypt.compare(password, user.data().password, (err, result) => {
-                if(result) {
+                if (result) {
                     let data = user.data();
                     return res.json({
                         name: data.name,
@@ -136,7 +138,7 @@ app.post('/login', (req, res) => {
                         seller: data.seller,
                     })
                 } else {
-                    return res.json({'alert': 'password is incorrect'});
+                    return res.json({ 'alert': 'password is incorrect' });
                 }
             })
         }
@@ -148,11 +150,11 @@ app.get('/seller', (req, res) => {
     res.sendFile(path.join(staticPath, "seller.html"));
 })
 app.post('/seller', (req, res) => {
-    let { name, about, address, number, tac, legit, email} = req.body;
+    let { name, about, address, number, tac, legit, email } = req.body;
     if (!name.length || !about.length || !address.length || number.length < 10 || !Number(number)) {
-        return res.json({'alert': 'some information(s) is/are invalid.'});
+        return res.json({ 'alert': 'some information(s) is/are invalid.' });
     } else if (!tac || !legit) {
-        return res.json({'alert': 'you must agree to our terms and conditions'});
+        return res.json({ 'alert': 'you must agree to our terms and conditions' });
     } else {
         // update users status here.
         db.collection('sellers').doc(email).set(req.body).then(data => {
@@ -177,6 +179,40 @@ app.get('/product', (req, res) => {
 // get the upload link
 app.get('/s3url', (req, res) => {
     generateUrl().then(url => res.json(url));
+})
+
+// add product
+app.post('/add-product', (req, res) => {
+    let { name, shortDes, des, images, sizes, actualPrice, discount, sellPrice, stock, tags, tac, email } = req.body;
+
+    // validation
+    if (!name.length) {
+        return res.json({ 'alert': 'please enter the product name' });
+    } else if (shortDes.value.length > 100 || shortLine.value.length < 10) {
+        return res.json({ 'alert': 'short description must be between 10 to 100 letters long' });
+    } else if (!des.value.length) {
+        return res.json({ 'alert': 'please enter the detail description about the product' });
+    } else if (!images.length) {
+        return res.json({ 'alert': 'please upload at least one image of the product' });
+    } else if (!sizes.length) {
+        return res.json({ 'alert': 'please select at least one size' });
+    } else if (!actualPrice.value.length || !discount.value.length || !sellPrice.value.length) {
+        return res.json({ 'alert': 'you must add pricings' });
+    } else if (stock.value < 20) {
+        return res.json({ 'alert': 'you must have at least 20 items in the stock' });
+    } else if (!tags.value.length) {
+        return res.json({ 'alert': 'enter few tags to help ranking your product in search' });
+    } else if (!tac.checked) {
+        return res.json({ 'alert': 'you must agree to our terms and conditions' });
+    }
+
+    // add product
+    let docName = `${name.toLowerCase()}-${Math.floor(Math.random() * 5000)}`;
+    db.collection('products').doc(docName).set(req.body).then(data => {
+        res.json({'product': name});
+    }).catch(err => {
+        return res.json({'alert': 'some error occured. Try again'});
+    })
 })
 
 // 404 route
