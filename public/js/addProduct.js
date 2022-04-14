@@ -96,7 +96,7 @@ const storeSizes = () => {
 const validateForm = () => {
     if (!productName.value.length) {
         return showAlert('please enter the product name');
-    } else if (shortDes.value.length > 100 || shortLine.value.length < 10) {
+    } else if (shortLine.value.length > 100 || shortLine.value.length < 10) {
         return showAlert('short description must be between 10 to 100 letters long');
     } else if (!des.value.length) {
         return showAlert('please enter the detail description about the product');

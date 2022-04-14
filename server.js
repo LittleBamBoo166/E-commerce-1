@@ -188,21 +188,21 @@ app.post('/add-product', (req, res) => {
     // validation
     if (!name.length) {
         return res.json({ 'alert': 'please enter the product name' });
-    } else if (shortDes.value.length > 100 || shortLine.value.length < 10) {
+    } else if (shortDes.length > 100 || shortDes.length < 10) {
         return res.json({ 'alert': 'short description must be between 10 to 100 letters long' });
-    } else if (!des.value.length) {
+    } else if (!des.length) {
         return res.json({ 'alert': 'please enter the detail description about the product' });
     } else if (!images.length) {
         return res.json({ 'alert': 'please upload at least one image of the product' });
     } else if (!sizes.length) {
         return res.json({ 'alert': 'please select at least one size' });
-    } else if (!actualPrice.value.length || !discount.value.length || !sellPrice.value.length) {
+    } else if (!actualPrice.length || !discount.length || !sellPrice.length) {
         return res.json({ 'alert': 'you must add pricings' });
     } else if (stock.value < 20) {
         return res.json({ 'alert': 'you must have at least 20 items in the stock' });
-    } else if (!tags.value.length) {
+    } else if (!tags.length) {
         return res.json({ 'alert': 'enter few tags to help ranking your product in search' });
-    } else if (!tac.checked) {
+    } else if (!tac) {
         return res.json({ 'alert': 'you must agree to our terms and conditions' });
     }
 
@@ -212,6 +212,25 @@ app.post('/add-product', (req, res) => {
         res.json({'product': name});
     }).catch(err => {
         return res.json({'alert': 'some error occured. Try again'});
+    })
+})
+
+// get product
+app.post('/get-products', (req, res) => {
+    let { email } = req.body;
+    let docRef = db.collection('products').where('email', '==', email);
+
+    docRef.get().then(products => {
+        if (products.empty) {
+            return res.json('no products');
+        }
+        let productArr = [];
+        products.forEach(item => {
+            let data = item.data();
+            data.id = item.id;
+            productArr.push(data);
+        })
+        res.json(productArr);
     })
 })
 
