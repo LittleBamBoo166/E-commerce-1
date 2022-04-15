@@ -68,7 +68,7 @@ const setupProducts = () => {
         productListingElement.classList.remove('hide');
         if (data == 'no products') {
             let emptySvg = document.querySelector('.no-product-image');
-            emptySvg.classList.add('hide');
+            emptySvg.classList.remove('hide');
         } else {
             data.forEach(product => createProduct(product));
         }

@@ -183,35 +183,37 @@ app.get('/s3url', (req, res) => {
 
 // add product
 app.post('/add-product', (req, res) => {
-    let { name, shortDes, des, images, sizes, actualPrice, discount, sellPrice, stock, tags, tac, email } = req.body;
+    let { name, shortDes, des, images, sizes, actualPrice, discount, sellPrice, stock, tags, tac, email, draft } = req.body;
 
     // validation
-    if (!name.length) {
-        return res.json({ 'alert': 'please enter the product name' });
-    } else if (shortDes.length > 100 || shortDes.length < 10) {
-        return res.json({ 'alert': 'short description must be between 10 to 100 letters long' });
-    } else if (!des.length) {
-        return res.json({ 'alert': 'please enter the detail description about the product' });
-    } else if (!images.length) {
-        return res.json({ 'alert': 'please upload at least one image of the product' });
-    } else if (!sizes.length) {
-        return res.json({ 'alert': 'please select at least one size' });
-    } else if (!actualPrice.length || !discount.length || !sellPrice.length) {
-        return res.json({ 'alert': 'you must add pricings' });
-    } else if (stock.value < 20) {
-        return res.json({ 'alert': 'you must have at least 20 items in the stock' });
-    } else if (!tags.length) {
-        return res.json({ 'alert': 'enter few tags to help ranking your product in search' });
-    } else if (!tac) {
-        return res.json({ 'alert': 'you must agree to our terms and conditions' });
+    if (!draft) {
+        if (!name.length) {
+            return res.json({ 'alert': 'please enter the product name' });
+        } else if (shortDes.length > 100 || shortDes.length < 10) {
+            return res.json({ 'alert': 'short description must be between 10 to 100 letters long' });
+        } else if (!des.length) {
+            return res.json({ 'alert': 'please enter the detail description about the product' });
+        } else if (!images.length) {
+            return res.json({ 'alert': 'please upload at least one image of the product' });
+        } else if (!sizes.length) {
+            return res.json({ 'alert': 'please select at least one size' });
+        } else if (!actualPrice.length || !discount.length || !sellPrice.length) {
+            return res.json({ 'alert': 'you must add pricings' });
+        } else if (stock.value < 20) {
+            return res.json({ 'alert': 'you must have at least 20 items in the stock' });
+        } else if (!tags.length) {
+            return res.json({ 'alert': 'enter few tags to help ranking your product in search' });
+        } else if (!tac) {
+            return res.json({ 'alert': 'you must agree to our terms and conditions' });
+        } 
     }
 
     // add product
     let docName = `${name.toLowerCase()}-${Math.floor(Math.random() * 5000)}`;
     db.collection('products').doc(docName).set(req.body).then(data => {
-        res.json({'product': name});
+        res.json({ 'product': name });
     }).catch(err => {
-        return res.json({'alert': 'some error occured. Try again'});
+        return res.json({ 'alert': 'some error occured. Try again' });
     })
 })
 
@@ -231,6 +233,16 @@ app.post('/get-products', (req, res) => {
             productArr.push(data);
         })
         res.json(productArr);
+    })
+})
+
+app.post('/delete-product', (req, res) => {
+    let { id } = req.body;
+
+    db.collection('products').doc(id).delete().then(data => {
+        res.json('success');
+    }).catch(err => {
+        res.json('err');
     })
 })
 

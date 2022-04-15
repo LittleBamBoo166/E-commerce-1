@@ -143,3 +143,18 @@ addProductBtn.addEventListener('click', () => {
         sendData('/add-product', data);
     }
 })
+
+// save draft btn 
+saveDraftBtn.addEventListener('click', () => {
+    // alert('draft'); 
+    storeSizes();
+    // check for product name
+    if (!productName.value.length) {
+        showAlert('please enter the product name');
+    } else {
+        // dont validate the data
+        let data = productData();
+        data.draft = true;
+        sendData('/add-product', data);
+    }
+})
