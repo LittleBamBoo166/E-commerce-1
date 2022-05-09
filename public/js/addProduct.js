@@ -46,21 +46,21 @@ uploadImages.forEach((fileupload, index) => {
         if (file.type.includes('image')) {
             // means user upload an image
             fetch('/s3url').then(res => res.json())
-            .then(url => {
-                fetch(url, {
-                    method: 'PUT',
-                    headers: new Headers({ 'Content-Type': 'multipart/form-data' }),
-                    body: file
-                }).then(res => {
-                    imageURL = url.split("?")[0];
-                    imagePaths[index] = imageURL;
-                    console.log(imageURL);
-                    let label = document.querySelector(`label[for=${fileupload.id}]`);
-                    label.style.backgroundImage = `url(${imageURL})`;
-                    let productImage = document.querySelector('.product-image');
-                    productImage.style.backgroundImage = `url(${imageURL})`;
-                })
-            });
+                .then(url => {
+                    fetch(url, {
+                        method: 'PUT',
+                        headers: new Headers({ 'Content-Type': 'multipart/form-data' }),
+                        body: file
+                    }).then(res => {
+                        imageURL = url.split("?")[0];
+                        imagePaths[index] = imageURL;
+                        console.log(imageURL);
+                        let label = document.querySelector(`label[for=${fileupload.id}]`);
+                        label.style.backgroundImage = `url(${imageURL})`;
+                        let productImage = document.querySelector('.product-image');
+                        productImage.style.backgroundImage = `url(${imageURL})`;
+                    })
+                });
         } else {
             showAlert('upload image only');
         }
@@ -117,6 +117,8 @@ const validateForm = () => {
 }
 
 const productData = () => {
+    let tagArr = tags.value.split(',');
+    tagArr.forEach((item, index) => tagArr[index] = tagArr[index].trim());
     return data = {
         name: productName.value,
         shortDes: shortLine.value,
@@ -127,7 +129,7 @@ const productData = () => {
         discount: discountPercentage.value,
         sellPrice: sellingPrice.value,
         stock: stock.value,
-        tags: tags.value,
+        tags: tagArr,
         tac: tac.checked,
         email: user.email
     }
@@ -140,6 +142,9 @@ addProductBtn.addEventListener('click', () => {
     if (validateForm()) {
         loader.style.display = 'block';
         let data = productData();
+        if (productId) {
+            data.id = productId;
+        }
         sendData('/add-product', data);
     }
 })
@@ -158,3 +163,62 @@ saveDraftBtn.addEventListener('click', () => {
         sendData('/add-product', data);
     }
 })
+
+// existing product detail handle
+let productId = null;
+
+const setFormsData = (data) => {
+    console.log(data);
+    productName.value = data.name;
+    shortLine.value = data.shortDes;
+    des.value = data.des;
+    actualPrice.value = data.actualPrice;
+    discountPercentage.value = data.discount;
+    sellingPrice.value = data.sellPrice;
+    stock.value = data.stock;
+    tags.value = data.tags;
+
+    // set up image
+    imagePaths = data.images;
+    imagePaths.forEach((url, i) => {
+        let label = document.querySelector(`label[for=${uploadImages[i].id}]`);
+        label.style.backgroundImage = `url(${url})`;
+        let productImage = document.querySelector('.product-image');
+        productImage.style.backgroundImage = `url(${url})`;
+    })
+
+    // set up sizes
+    sizes = data.sizes;
+    let sizeCheckBox = document.querySelectorAll('.size-checkbox');
+    sizeCheckBox.forEach(item => {
+        if (sizes.includes(item.value)) {
+            item.setAttribute('checked', '');
+        }
+    })
+}
+
+const fetchProductData = () => {
+    // delete the tempProduct from the session
+    // delete sessionStorage.tempProduct;
+    fetch('/get-products', {
+        method: 'post',
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ email: user.email, id: productId })
+    }).then((res) => res.json()).then(data => {
+        // console.log(data);
+        setFormsData(data);
+    }).catch(err => {
+        console.log(err);
+    })
+}
+// console.log(location.pathname);
+if (location.pathname != '/add-product') {
+    productId = decodeURI(location.pathname.split('/').pop());
+
+    // let productDetail = JSON.parse(sessionStorage.tempProduct || null);
+    // fetch the data if product is not in session
+    // if (productDetail == null) {
+    fetchProductData();
+    // }
+}
+

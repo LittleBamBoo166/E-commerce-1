@@ -99,6 +99,10 @@
 }
 .product-brand {
     text-transform: uppercase;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
 }
 .product-short-des {
     width: 100%;

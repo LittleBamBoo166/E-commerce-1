@@ -172,8 +172,8 @@ app.get('/add-product', (req, res) => {
     res.sendFile(path.join(staticPath, "addProduct.html"));
 })
 
-app.get('/product', (req, res) => {
-    res.sendFile(path.join(staticPath, "product.html"));
+app.get('/add-product/:id', (req, res) => {
+    res.sendFile(path.join(staticPath, "addProduct.html"));
 })
 
 // get the upload link
@@ -183,7 +183,7 @@ app.get('/s3url', (req, res) => {
 
 // add product
 app.post('/add-product', (req, res) => {
-    let { name, shortDes, des, images, sizes, actualPrice, discount, sellPrice, stock, tags, tac, email, draft } = req.body;
+    let { name, shortDes, des, images, sizes, actualPrice, discount, sellPrice, stock, tags, tac, email, draft, id } = req.body;
 
     // validation
     if (!draft) {
@@ -205,11 +205,11 @@ app.post('/add-product', (req, res) => {
             return res.json({ 'alert': 'enter few tags to help ranking your product in search' });
         } else if (!tac) {
             return res.json({ 'alert': 'you must agree to our terms and conditions' });
-        } 
+        }
     }
 
     // add product
-    let docName = `${name.toLowerCase()}-${Math.floor(Math.random() * 5000)}`;
+    let docName = id == undefined ? `${name.toLowerCase()}-${Math.floor(Math.random() * 5000)}` : id;
     db.collection('products').doc(docName).set(req.body).then(data => {
         res.json({ 'product': name });
     }).catch(err => {
@@ -219,20 +219,32 @@ app.post('/add-product', (req, res) => {
 
 // get product
 app.post('/get-products', (req, res) => {
-    let { email } = req.body;
-    let docRef = db.collection('products').where('email', '==', email);
+    let { email, id, tag } = req.body;
+
+    if (id) {
+        docRef = db.collection('products').doc(id);
+    } else if (tag){
+        docRef = db.collection('products').where('tags', 'array-contains', tag);
+    } else {
+        docRef = db.collection('products').where('email', '==', email);
+    }
 
     docRef.get().then(products => {
         if (products.empty) {
             return res.json('no products');
         }
         let productArr = [];
-        products.forEach(item => {
-            let data = item.data();
-            data.id = item.id;
-            productArr.push(data);
-        })
-        res.json(productArr);
+        if (id) {
+            return res.json(products.data());
+        } else {
+            products.forEach(item => {
+                let data = item.data();
+                data.id = item.id;
+                productArr.push(data);
+            })
+            res.json(productArr);
+        }
+
     })
 })
 
@@ -244,6 +256,11 @@ app.post('/delete-product', (req, res) => {
     }).catch(err => {
         res.json('err');
     })
+})
+
+// product page
+app.get('/products/:id', (req, res) => {
+    res.sendFile(path.join(staticPath, "product.html"));
 })
 
 // 404 route
