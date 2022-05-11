@@ -69,5 +69,36 @@ const createProductCards = (data, parent) => {
         }
     }
 
-    return start + middle + end;
+    if (middle == '') {
+        middle = 'No products';
+    }
+
+    if (parent) {
+        let cardContainer = document.querySelector(parent);
+        cardContainer.innerHTML = start + middle + end;
+    } else {
+        return start + middle + end;
+    }
+}
+
+const addProductToCartOrWishlist = (type, product) => {
+    let data = JSON.parse(localStorage.getItem(type));
+    // data: array of products in cart
+    if (data == null) {
+        data = [];
+    }
+
+    product = {
+        item: 1,
+        name: product.name,
+        sellPrice: product.sellPrice,
+        size: size || null,
+        shortDes: product.shortDes,
+        image: product.images[0]
+    }
+
+    data.push(product);
+    // console.log(data);
+    localStorage.setItem(type, JSON.stringify(data));
+    return 'added';
 }

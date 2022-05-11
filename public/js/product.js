@@ -17,12 +17,14 @@ productImages.forEach((item, i) => {
 // toggle size btns
 const sizeBtns = document.querySelectorAll('.size-radio-btn');
 let checkedBtn = 0;
+let size;
 
 sizeBtns.forEach((item, i) => {
     item.addEventListener('click', () => {
         sizeBtns[checkedBtn].classList.remove('check');
         item.classList.add('check');
         checkedBtn = i;
+        size = item.innerHTML;
     })
 })
 
@@ -65,6 +67,16 @@ const setData = (data) => {
     actualPrice.innerHTML += '$' + data.actualPrice;
     discount.innerHTML += `( ${data.discount}% off )`;
 
+    // wishlist and cart btn
+    const wishlistBtn = document.querySelector('.wishlist-btn');
+    const cartBtn = document.querySelector('.cart-btn');
+
+    wishlistBtn.addEventListener('click', () => {
+        wishlistBtn.innerHTML = addProductToCartOrWishlist('wishlist', data);
+    });
+    cartBtn.addEventListener('click', () => {
+        cartBtn.innerHTML = addProductToCartOrWishlist('cart', data);
+    })
 }
 
 // fetch data
