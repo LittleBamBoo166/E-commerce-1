@@ -35,10 +35,12 @@ const setupEvents = (name) => {
 
         counterMinus[i].addEventListener('click', () => {
             if (item.innerHTML > 1) {
-                item.innerHTML = Number(item.innerHTML) - 1 + 0.5;
+                item.innerHTML = Number(item.innerHTML) - 1;
                 totalBill -= cost;
                 price[i].innerHTML = `$${(item.innerHTML * cost).toFixed()}`;
-                updateBill();
+                if (name == 'cart') {
+                    updateBill();
+                }
                 product[i].item = item.innerHTML;
                 localStorage.setItem(name, JSON.stringify(product));
             }
@@ -46,10 +48,12 @@ const setupEvents = (name) => {
 
         counterPlus[i].addEventListener('click', () => {
             if (item.innerHTML < 9) {
-                item.innerHTML = Number(item.innerHTML) + 1 - 0.5;
+                item.innerHTML = Number(item.innerHTML) + 1;
                 totalBill += cost;
                 price[i].innerHTML = `$${(item.innerHTML * cost).toFixed()}`;
-                updateBill();
+                if (name == 'cart') {
+                    updateBill();
+                }
                 product[i].item = item.innerHTML;
                 localStorage.setItem(name, JSON.stringify(product));
             }
@@ -67,14 +71,15 @@ const setupEvents = (name) => {
 
 const updateBill = () => {
     let billPrice = document.querySelector('.bill');
-    billPrice.innerHTML = `$${totalBill}`;
+    billPrice.innerHTML = `$${totalBill.toFixed()}`;
 }
 
 const setProducts = (name) => {
     const element = document.querySelector(`.${name}`);
     let data = JSON.parse(localStorage.getItem(name));
-    if (data == null) {
+    if (!data.length) {
         element.innerHTML = `<img src="img/empty-cart.png" class="empty-img" alt="">`;
+        console.log(`${name} null`);
     } else {
         for (let i = 0; i < data.length; ++i) {
             element.innerHTML += createSmallCards(data[i]);
@@ -83,9 +88,11 @@ const setProducts = (name) => {
             }
             updateBill();
         }
+        console.log(`${name} not null`);
+        setupEvents(name);
     }
-    setupEvents(name);
 }
 
 setProducts('cart');
 setProducts('wishlist');
+setupEvents('wishlist');
