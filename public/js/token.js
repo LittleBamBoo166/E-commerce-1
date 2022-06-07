@@ -62,7 +62,16 @@ const processData = (data) => {
 const showAlert = (msg) => {
     let alertBox = document.querySelector('.alert-box');
     let alertMsg = document.querySelector('.alert-msg');
+    let alertImg = document.querySelector('.alert-img');
+
     alertMsg.innerHTML = msg;
+    if (type = 'success') {
+        alertImg.src = `img/success.png`;
+        alertMsg.style.color = '#0ab50a';
+    } else {
+        alertImg.src = `img/error.png`;
+        alertMsg.style.color = null;
+    }
     alertBox.classList.add('show');
     setTimeout(() => {
         alertBox.classList.remove('show');
